@@ -24,10 +24,12 @@ class VoiceMemoApp:
         self.is_recording = False
         self.notes = []
         self.notes_file = "voice_notes.json"
+        self.settings_file = "voice_memo_settings.json"
         self.current_hotkey = "f9"  # Default hotkey
         
-        # Load existing notes
+        # Load existing notes and settings
         self.load_notes()
+        self.load_settings()
         
         # Setup GUI
         self.setup_gui()
@@ -119,6 +121,9 @@ class VoiceMemoApp:
             self.current_hotkey = new_hotkey
             self.status_label.config(text=f"Press {self.current_hotkey.upper()} to start recording")
             
+            # Save settings
+            self.save_settings()
+            
             messagebox.showinfo("Success", f"Hotkey changed to: {new_hotkey.upper()}")
             print(f"Hotkey changed to: {new_hotkey.upper()}")
             
@@ -182,7 +187,7 @@ class VoiceMemoApp:
         import winsound
         if beep_type == "start":
             # Higher pitch for start
-            winsound.Beep(800, 200)
+            winsound.Beep(600, 200)
         elif beep_type == "stop":
             # Lower pitch for stop
             winsound.Beep(400, 300)
@@ -259,6 +264,26 @@ class VoiceMemoApp:
                 json.dump(self.notes, f, indent=2)
         except Exception as e:
             print(f"Error saving notes: {e}")
+    
+    def load_settings(self):
+        try:
+            if os.path.exists(self.settings_file):
+                with open(self.settings_file, 'r') as f:
+                    settings = json.load(f)
+                    self.current_hotkey = settings.get('hotkey', 'f9')
+        except Exception as e:
+            print(f"Error loading settings: {e}")
+            self.current_hotkey = 'f9'
+    
+    def save_settings(self):
+        try:
+            settings = {
+                'hotkey': self.current_hotkey
+            }
+            with open(self.settings_file, 'w') as f:
+                json.dump(settings, f, indent=2)
+        except Exception as e:
+            print(f"Error saving settings: {e}")
     
     def run(self):
         try:
