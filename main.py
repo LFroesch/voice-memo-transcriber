@@ -98,10 +98,14 @@ class VoiceMemoApp:
     def setup_hotkey(self):
         # Register hotkey
         try:
-            keyboard.add_hotkey(self.current_hotkey, self.toggle_recording)
+            keyboard.add_hotkey(self.current_hotkey, self.hotkey_pressed)
             print(f"Global hotkey {self.current_hotkey.upper()} registered successfully")
         except Exception as e:
             print(f"Failed to register hotkey: {e}")
+    
+    def hotkey_pressed(self):
+        """Handle hotkey press by dispatching to main thread"""
+        self.root.after(0, self.toggle_recording)
     
     def change_hotkey(self):
         new_hotkey = self.hotkey_var.get().strip().lower()
@@ -115,7 +119,7 @@ class VoiceMemoApp:
             keyboard.unhook_all()
             
             # Test new hotkey
-            keyboard.add_hotkey(new_hotkey, self.toggle_recording)
+            keyboard.add_hotkey(new_hotkey, self.hotkey_pressed)
             
             # Update current hotkey
             self.current_hotkey = new_hotkey
@@ -130,7 +134,7 @@ class VoiceMemoApp:
         except Exception as e:
             # Restore original hotkey if new one fails
             try:
-                keyboard.add_hotkey(self.current_hotkey, self.toggle_recording)
+                keyboard.add_hotkey(self.current_hotkey, self.hotkey_pressed)
             except:
                 pass
             messagebox.showerror("Error", f"Invalid hotkey: {new_hotkey}\n\nError: {e}")
@@ -203,10 +207,10 @@ class VoiceMemoApp:
             self.transcribe_audio(audio)
             
         except sr.WaitTimeoutError:
-            if self.is_recording:
-                # Continue recording if still in recording mode
-                self.record_audio()
+            # On timeout, stop recording exactly like hitting the button
+            self.root.after(0, self.stop_recording)
         except Exception as e:
+            self.root.after(0, self.stop_recording)
             self.root.after(0, lambda: self.status_label.config(text=f"Recording error: {e}"))
     
     def transcribe_audio(self, audio):
@@ -226,9 +230,14 @@ class VoiceMemoApp:
             self.root.after(0, self.update_after_transcription)
             
         except sr.UnknownValueError:
+            self.root.after(0, self.stop_recording)
             self.root.after(0, lambda: self.status_label.config(text="Could not understand audio"))
         except sr.RequestError as e:
+            self.root.after(0, self.stop_recording)
             self.root.after(0, lambda: self.status_label.config(text=f"Speech recognition error: {e}"))
+        finally:
+            # Always stop recording after transcription attempt
+            self.root.after(0, self.stop_recording)
     
     def update_after_transcription(self):
         self.display_notes()
