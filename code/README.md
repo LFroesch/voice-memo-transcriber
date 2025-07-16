@@ -26,4 +26,8 @@ cd C:\Users\lucas\Desktop\WindowsBuildsFromWSL/voice-note
 python -m PyInstaller --onefile --windowed --name="Voice Memo Transcriber" --icon=myicon.ico main.py
 
 # 3 (optional)
+in wsl
+git rm -r --cached exe/
+in windows
 copy /Y "C:\Users\lucas\Desktop\WindowsBuildsFromWSL\voice-note\exe\Voice Memo Transcriber.exe" "\\wsl.localhost\Ubuntu\home\lucas\projects\active\daily_use\voice-note\exe\"
+
