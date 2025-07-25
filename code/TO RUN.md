@@ -1,10 +1,3 @@
-# voice-memo-transcriber
-
-Voice-Memo-Transcriber uses global hotkeys to capture audio from your mic and then transcribe it to text,
-and saves it into a text file / displays it in a UI for you to copy from.
-
-Included is the source code as well as the .exe for Windows Desktop
-
 
 # After Edits
 # Copy to Windows
@@ -29,5 +22,4 @@ python -m PyInstaller --onefile --windowed --name="Voice Memo Transcriber" --ico
 in wsl
 git rm -r --cached exe/
 in windows
-copy /Y "C:\Users\lucas\Desktop\WindowsBuildsFromWSL\voice-note\exe\Voice Memo Transcriber.exe" "\\wsl.localhost\Ubuntu\home\lucas\projects\active\daily_use\voice-note\exe\"
-
+copy /Y "C:\Users\lucas\Desktop\WindowsBuildsFromWSL\voice-note\dist\Voice Memo Transcriber.exe" "\\wsl.localhost\Ubuntu\home\lucas\projects\active\daily_use\voice-note\exe\"
